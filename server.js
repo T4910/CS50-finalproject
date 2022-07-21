@@ -11,8 +11,16 @@ app.get('/', (req, res) => {
   res.redirect(`/${uuidV4()}`)
 });
 
+
 app.get('/:room', (req, res) => {
+  console.log(req.param.room)
   res.render('room', {roomID: req.param.room})
+})
+
+io.on('connection', socket => {
+  socket.on('join-room', (roomID, userID) => {
+    console.log(roomID, userID)
+  })
 })
 
 server.listen(3000);
