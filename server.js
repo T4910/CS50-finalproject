@@ -13,14 +13,14 @@ app.get('/', (req, res) => {
 
 
 app.get('/:room', (req, res) => {
-  console.log(req.param.room)
-  res.render('room', {roomID: req.param.room})
+  res.render('room', {roomID: req.params.room})
 })
 
 io.on('connection', socket => {
   socket.on('join-room', (roomID, userID) => {
-    console.log(roomID, userID)
+    socket.join(roomID)
+    socket.broadcast.to(roomID).emit('user-connected', userID)
   })
-})
+});
 
 server.listen(3000);
