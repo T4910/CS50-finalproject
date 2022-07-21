@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  res.send("Main page")
+  res.send("Main page, right?")
 });
 
 server.listen(3000);
