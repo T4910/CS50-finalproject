@@ -4,7 +4,10 @@ const userPeer = new Peer(undefined, {
     port: '3001'
 })
 
-socket.emit('join-room', ROOMID, 10/*USERID*/)
+userPeer.on('open', userpeerid => {
+    socket.emit('join-room', ROOMID, userpeerid)
+
+})
 
 socket.on('user-connected', userID => {
     console.log('User connected'+ userID)
