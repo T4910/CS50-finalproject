@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require('express')
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server)
-const {v4: uuidV4} = require('uuid')
+const { v4: uuidV4 } = require('uuid');
 
 app.set("view engine", "ejs");
 app.use(express.static('public'))
@@ -20,10 +20,14 @@ io.on('connection', socket => {
   socket.on('join-room', (roomID, userID) => {
     socket.join(roomID)
     socket.broadcast.to(roomID).emit('user-connected', userID)
-  
+    console.log(userID +' connected')
+
+
     socket.on('disconnect', () => {
       socket.broadcast.to(roomID).emit('user-disconnected', userID)
+      console.log(userID +' disconnected')
     })
+
   })
 });
 

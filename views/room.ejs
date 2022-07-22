@@ -9,13 +9,13 @@
         const ROOMID = "<%= roomID %>"
     </script>
     <script src="https://unpkg.com/peerjs@1.4.5/dist/peerjs.min.js" defer></script>
-    <script src="socket.io/socket.io.js" defer></script>
+    <script src="/socket.io/socket.io.js" defer></script>
     <script src="script.js" defer></script>
     <style>
         #records{
             display: grid;
-            grid-template-columns: repeat(auto-fill, 300px);
-            grid-auto-rows: 300px
+            grid-template-columns: repeat(auto-fill, 100px);
+            grid-auto-rows: 100px
         }
         video{
             width: 100%;
@@ -25,8 +25,6 @@
     </style>
 </head>
 <body>
-    <div id="records">
-
-    </div>
+    <div id="records"></div>
 </body>
 </html>
