@@ -2,7 +2,8 @@ const socket = io('/')
 const vidspace = document.querySelector('#records')
 const userPeer = new Peer(undefined, {
     host: '/',
-    port: '3001'
+    port: '3001',
+    path: '/room'
 })
 const peersconnected = {}
 
@@ -24,7 +25,8 @@ navigator.mediaDevices.getUserMedia({
 
     socket.on('user-connected', userID => {
         // delaying the connection so that the responders videostream can load 
-        setTimeout(connecttouser, 1000, userID, stream)
+        setTimeout(connecttouser, 950, userID, stream)
+        // connecttouser(userID, stream)
     })
 
 
@@ -36,13 +38,14 @@ navigator.mediaDevices.getUserMedia({
         callobj.on('stream', receivedvidstream => {
             videostream(sentvideostream, receivedvidstream)
         })
+
     })
 
 })
 
 socket.on('user-disconnected', userID => {
     console.log(userID + ' left')
-    if(peersconnected[userID]) peersconnected[userID].close()
+    if(peersconnected[userID]) setInterval(peersconnected[userID].close(), 2000)
 })
 
 
