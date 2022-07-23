@@ -11,9 +11,40 @@ app.use(express.static('public'))
 
 
 app.get('/', (req, res) => {
-  console.log(__filename)
-  res.render('')
+  res.render('profile')
 });
+
+
+// Signing routers
+app.route('/login')
+.get((req, res) => {
+  res.render('login')
+})
+.post((req, res) => {
+  res.redirect('/')
+})
+
+app.route('/register')
+.get((req, res) => {
+  res.render('register')
+})
+.post((req, res) => {
+  res.redirect('/')
+})
+
+app.route('/anonymous')
+.get((req, res) => {
+  res.render('anonymous')
+})
+.post((req, res) => {
+  res.redirect('/')
+})
+
+app.get('/logout', (req, res) => {
+  // don't forget to kill session
+  res.redirect('/login')
+})
+
 
 
 // room routers
