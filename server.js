@@ -30,15 +30,6 @@ async function insert_user_db(name, email, password, anonymous){
   console.log("added "+inputval+" to db")
 }
 
-async function usernametaken(name){
-  const namecheck = await Userdb.find({ username: name })
-  if(namecheck.length != 0){
-    return true
-  }
-
-  return false
-}
-
 async function identifyuser(person){
   const obj = await Userdb.find({ username: person })
   return obj
@@ -66,92 +57,16 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-app.get('/', checkauth, (req, res) => {
+app.get('/', preventnonloggeduser, (req, res) => {
   res.render('index', {name: req.user.name})
 });
 
 
 // Signing routers
-app.route('/login', checknotauth)
-.get((req, res) => {
-  res.render('login')
-})
-.post(passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-  failureFlash: true
-}))
+const signRouters = require('./routes/signings.js')
+app.use('/', signRouters)
 
-app.route('/register', checknotauth)
-.get((req, res) => {
-  res.render('register')
-})
-.post( async (req, res) => {
-  
-  // validations
-  if(!(req.body.username))
-  {
-    req.flash('no_username', 'Require username')
-    res.redirect('/register')
-    return
-  }
-  else if(!(req.body.email))
-  {
-    req.flash('no_email', 'Require email')
-    res.redirect('/register')
-    return
-  }
-  else if(!(req.body.password))
-  {
-    req.flash('no_password', 'Require password')
-    res.redirect('/register')
-    return
-  }
-  else if(usernametaken(req.body.username))
-  {
-    req.flash('usertaken', 'Username taken')
-    res.redirect('/register')
-    return
-  }
-
-  try{
-    const hashed_password = await bcrypt.hash(req.body.password, 10)
-    const datainputs = {
-      name: req.body.username,
-      email: req.body.email,
-      password: hashed_password
-    }
-
-    insert_user_db(datainputs.name, datainputs.email, datainputs.password, false)
-    res.redirect('/login')
-
-  } catch (err) {
-    res.redirect('/register')
-    console.log(err)
-  }
-})
-
-app.route('/anonymous', checknotauth)
-.get((req, res) => {
-  res.render('anonymous')
-})
-.post((req, res) => {
-  res.redirect('/')
-})
-
-app.post('/logout', (req, res) => {
-  // don't forget to kill session
-  req.logout(err => {
-    if (err) { next(err); }
-    res.redirect('/login');
-  });
-})
-
-
-// const signRouters = require('./routes/signings.js')
-// app.use('/', signRouters)
-
-// room routers
+// Room routers
 const roomRouter = require('./routes/rooms.js');
 app.use('/room', roomRouter)
 
@@ -173,7 +88,7 @@ io.on('connection', socket => {
 
 
 // middleware function that prevent unauthorized users from entering private pages
-function checkauth(req, res, next){
+function preventnonloggeduser(req, res, next){
   if(req.isAuthenticated()) {
     return next()
   }
@@ -181,8 +96,8 @@ function checkauth(req, res, next){
   res.redirect('/login')
 }
 
-// middleware function that prevents logged in users from logging out through get requests
-function checknotauth(req, res, next){
+// middlware function that prevents authorized users from loging out accidentally
+function preventloggeduser(req, res, next){
   if(req.isAuthenticated()) {
     return res.redirect('/')
   }
