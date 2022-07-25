@@ -22,8 +22,9 @@ function passinit(passport, valUSER, valID){
 
     passport.use(new localStrats({}, authUser))
     passport.serializeUser((user, done) => done(null, user.id))
-    passport.deserializeUser((id, done) => {
-        return done(null, valID(id))
+    passport.deserializeUser(async (id, done) => {
+        id_validation = await valID(id)
+        return done(null, id_validation)
     })
 }
 
