@@ -8,6 +8,18 @@
 </head>
 <body>
     <h1>Debation</h1>
+    <% if (messages.usertaken) { %>
+        <%= messages.usertaken %>
+    <% } %>
+    <% if (messages.no_username) { %>
+        <%= messages.no_username %>
+    <% } %>
+    <% if (messages.no_password) { %>
+        <%= messages.no_password %>
+    <% } %>
+    <% if (messages.no_email) { %>
+        <%= messages.no_email %>
+    <% } %>
     <form action="/register" method="POST">
         <label for="username">Name:</label>
         <input type="text" name="username" id="username" autocomplete required>
