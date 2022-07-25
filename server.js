@@ -1,3 +1,4 @@
+// checks if project not in production in other to use default environment variables
 if(process.env.NODE_ENV !== 'production'){
   require('dotenv').config()
 }
@@ -14,15 +15,42 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server)
 
 // database
-const databaselol = []
+const mongoose = require('mongoose')
+const Userdb = require('./userschema')
+mongoose.connect("mongodb://localhost/usersdb",() => {console.log('db connected')}, err => console.log(err))
+
+async function insert_user_db(name, email, password, anonymous){
+  const inputval = await Userdb.create({
+    username: name,
+    email: email,
+    password: password,
+    datejoined: Date.now(),
+    tempUser: anonymous
+  })
+  console.log("added "+inputval+" to db")
+}
+
+async function usernametaken(name){
+  const namecheck = await Userdb.find({ username: name })
+  if(namecheck.length != 0){
+    return true
+  }
+
+  return false
+}
+
+async function identifyuser(person){
+  const obj = await Userdb.find({ username: person })
+  return obj
+}
+
+async function identifyid(id){
+  const obj = await Userdb.find({ _id: id })
+  return obj
+}
 
 const initPassport = require("./passport-config")
-initPassport(
-  passport, 
-  userName => databaselol.find(user => user.name === userName),
-  id => databaselol.find(user => user.id === id)
-  )
-
+initPassport(passport, identifyuser, identifyid)
 
 
 app.set("view engine", "ejs");
@@ -36,6 +64,7 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+
 
 app.get('/', checkauth, (req, res) => {
   res.render('index', {name: req.user.name})
@@ -58,20 +87,48 @@ app.route('/register', checknotauth)
   res.render('register')
 })
 .post( async (req, res) => {
+  
+  // validations
+  if(!(req.body.username))
+  {
+    req.flash('no_username', 'Require username')
+    res.redirect('/register')
+    return
+  }
+  else if(!(req.body.email))
+  {
+    req.flash('no_email', 'Require email')
+    res.redirect('/register')
+    return
+  }
+  else if(!(req.body.password))
+  {
+    req.flash('no_password', 'Require password')
+    res.redirect('/register')
+    return
+  }
+  else if(usernametaken(req.body.username))
+  {
+    req.flash('usertaken', 'Username taken')
+    res.redirect('/register')
+    return
+  }
+
   try{
     const hashed_password = await bcrypt.hash(req.body.password, 10)
-    databaselol.push({
-      id: Date.now().toString(),
+    const datainputs = {
       name: req.body.username,
       email: req.body.email,
       password: hashed_password
-    })
+    }
+
+    insert_user_db(datainputs.name, datainputs.email, datainputs.password, false)
     res.redirect('/login')
+
   } catch (err) {
     res.redirect('/register')
     console.log(err)
   }
-  console.log(databaselol)
 })
 
 app.route('/anonymous', checknotauth)
@@ -90,6 +147,9 @@ app.post('/logout', (req, res) => {
   });
 })
 
+
+// const signRouters = require('./routes/signings.js')
+// app.use('/', signRouters)
 
 // room routers
 const roomRouter = require('./routes/rooms.js');
