@@ -5,7 +5,8 @@ const Userschema = new mongoose.Schema({
     email: String,
     password: String,
     datejoined: Date,
-    tempUser: Boolean
+    tempUser: Boolean,
+    imgPath: String
 })
 
 module.exports = mongoose.model('User', Userschema)

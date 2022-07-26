@@ -4,15 +4,101 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profie</title>
+    <link rel="stylesheet" href="./styles/login_styles.css">
+    <script src="./upload_img.js" defer></script>
+    <title>Profile</title>
 </head>
 <body>
-    <h1>PROFILE</h1>
-    Welcome ..name of person..
+    <div class="arrange">
+        <div class="profile">
+            <div class="menu">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <nav>
+                <ul>
+                  <li><a href="#">version</a></li>
+                  <li><a href="#">About us</a></li>
+                  <li><a href="#">Contact us</a></li>
+                  <li><a href="#">Privacy policy</a></li>
+                  <li><a href="#">Terms of use</a></li>
+                  <li>
+                    <form action="/logout" method="POST">
+                        <button class="logout">Logout</button>
+                    </form>
+                  </li>
+                </ul>
+            </nav>
+            <div class="profile_img">
+                <img src=/images/<%= imgPath %> alt="default">
+                <div class="upload_photo">
+                    <form action="/upload" enctype="multipart/form-data" method="POST">
+                        <label for="image">
+                            Upload image....
+                            <input type="file" name="prfimg" id="image"  accept="image/png, image/jpg, image/jpeg">
+                            <input type="hidden" name="id" value=<%= id %>>
+                        </label>
+                        <input type="submit" style="display: initial;">
+                    </form>
+                </div>
+                <p><%= name %></p>
+                <small><%= email %></small>
+            </div>
+            <br>
+            <div class="description">
+                <h4>description:</h4>
+                <p class="worddescription">
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                    Minima iste mollitia excepturi doloremque non minus deserunt. 
+                </p>
+            </div>
+            <br>
+            <div class="socials">
+                <h4>Social links:</h4>
+                <ul>
+                    <li><a href="#">facebook</a></li>
+                    <li><a href="#">facebook</a></li>
+                    <li><a href="#">facebook</a></li>
+                </ul>
+            </div>
+            <br>
+            <h4>Win count: 0<span>1</span></h4>
+            <br>
+            <div class="recent_debates">
+                <h4>Recent debates:</h4>
+                <div class="debates">
+                    <ul>
+                        <li>Topic</li>
+                        <li>topi</li>
+                        <li>teat</li>
+                    </ul>
+                </div>
+            </div>
 
-    <!-- <button><a href="/logout">Logout</a></button> -->
-    <form action="/logout" method="POST">
-        <input type="submit" value="Logout">
-    </form>
+            <br>
+            <button id="edit">Edit...</button>
+            <p>© 2022 Tobi, Inc.</p>
+        
+        </div>
+        <div class="room_sections">
+            <div class="rooms">
+                <ul>
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                    <li>4</li>
+                    <li>5</li>
+                </ul>
+            </div>
+            <div class="roominit">
+                <button>make room</button>
+                <form action="" method="POST">
+                    <input type="text" name="room_id" id="room_id">
+                    <input type="button" value="search">
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

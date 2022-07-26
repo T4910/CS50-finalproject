@@ -76,12 +76,13 @@ router.route('/anonymous', preventloggeduser)
   res.redirect('/')
 })
 
-router.post('/logout', (req, res) => {
-  // don't forget to kill session
+router.route('/logout')
+.get(preventloggeduser)
+.post((req, res) => {
   req.logout(err => {
     if (err) { next(err); }
     res.redirect('/login');
-  });
+  })
 })
 
 
@@ -110,7 +111,8 @@ async function insert_user_db(name, email, password, anonymous){
     email: email,
     password: password,
     datejoined: Date.now(),
-    tempUser: anonymous
+    tempUser: anonymous,
+    imgPath: ''
   })
   console.log("added "+inputval+" to db")
 }
