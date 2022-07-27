@@ -21,6 +21,11 @@ nav li a {
     text-decoration: none;
 }
 
+::-webkit-scrollbar{
+    width: 10px;
+}
+
+
 form[action="/logout"] button{
     display: block;
     color: #000;
@@ -50,7 +55,10 @@ form[action='/upload'] label{
     cursor: pointer;
 }
 
-
+img.avatar{
+    border-radius: 50%;
+    margin: 10px auto;
+}
 
 
 p.worddescription{
@@ -81,11 +89,6 @@ p.worddescription{
     overflow: auto;
 }
 
-::-webkit-scrollbar{
-    width: 10px;
-}
-
-
 .room_sections{
     background-color: #FFEEEE;
     height: 90%; 
@@ -115,3 +118,4 @@ p.worddescription{
     background-color: black;
     margin: 6px 0;
 }
+

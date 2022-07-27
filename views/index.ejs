@@ -31,7 +31,7 @@
                 </ul>
             </nav>
             <div class="profile_img">
-                <img src=/images/<%= imgPath %> alt="default">
+                <img src=/images/<%= imgPath %> class="avatar" alt="default">
                 <div class="upload_photo">
                     <form action="/upload" enctype="multipart/form-data" method="POST">
                         <label for="image">
@@ -42,24 +42,23 @@
                         <input type="submit" style="display: initial;">
                     </form>
                 </div>
-                <p><%= name %></p>
+                <h3><%= name %></h3>
                 <small><%= email %></small>
             </div>
             <br>
             <div class="description">
                 <h4>description:</h4>
                 <p class="worddescription">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-                    Minima iste mollitia excepturi doloremque non minus deserunt. 
+                <%= description %>
                 </p>
             </div>
             <br>
             <div class="socials">
                 <h4>Social links:</h4>
                 <ul>
-                    <li><a href="#">facebook</a></li>
-                    <li><a href="#">facebook</a></li>
-                    <li><a href="#">facebook</a></li>
+                    <% for (i = 0; i < socials_list.length; i++){ %>
+                        <li><%= socials_list[i].social %>: <a href="#"><%= socials_list[i].link %></a></li>
+                    <% } %>
                 </ul>
             </div>
             <br>
@@ -76,6 +75,46 @@
                 </div>
             </div>
 
+            <form action="/fillprofile" method="POST">
+                <textarea name="desc" id="desc" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...."></textarea>
+                <br>
+                <label for="email">
+                    email:
+                    <input type="email" name="email" id="email" value=<%= email %>>
+                </label>
+                <br>
+                <% for (i = 0; i < socials_list.length; i++){ %>
+                    <label for=<%= socials_list[i].social %>>
+                    <%= socials_list[i].social %>: 
+                    <input type="text" name=<%= socials_list[i].social %> id=<%= socials_list[i].social %> value=<%= socials_list[i].link %>>
+                    <br>
+                <% } %>
+                <!-- <label for="facebook">
+                    facebook:
+                    <input type="text" name="facebook" id="facebook" value=<%= socials.facebook %>>
+                </label>
+                <br>
+                <label for="linkedin">
+                    linkedin:
+                    <input type="text" name="linkedin" id="linkedin" value=<%= socials.linkedin %>>
+                </label>
+                <br>
+                <label for="instagram">
+                    instagram:
+                    <input type="text" name="instagram" id="instagram" value=<%= socials.instagram %>>
+                </label>
+                <br>
+                <label for="twitter">
+                    twitter:
+                    <input type="text" name="twitter" id="twitter" value=<%= socials.twitter %>>
+                </label>
+                <br>
+                <label for="web">
+                    website:
+                    <input type="text" name="web" id="web" value=<%= socials.website %>>
+                </label> -->
+                <input type="submit" value="Change">
+            </form>
             <br>
             <button id="edit">Edit...</button>
             <p>© 2022 Tobi, Inc.</p>

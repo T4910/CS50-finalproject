@@ -6,7 +6,17 @@ const Userschema = new mongoose.Schema({
     password: String,
     datejoined: Date,
     tempUser: Boolean,
-    imgPath: String
+    imgPath: String,
+    socials:{
+        facebook: String,
+        linkedin: String,
+        instagram: String,
+        twitter: String,
+        website: String
+    },
+    description: String,
+    wins: Number,
+    debates: Array
 })
 
 module.exports = mongoose.model('User', Userschema)

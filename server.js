@@ -79,13 +79,30 @@ app.use(passport.session())
 
 
 app.get('/', preventnonloggeduser, async (req, res) => {
-  let imageextract = await Userdb.findOne({_id: req.user[0]._id})
+  const dataextract = await Userdb.findOne({_id: req.user[0]._id})
   res.render('index', {
     name: req.user[0].username, 
     id: req.user[0]._id, 
     date: req.user[0].datejoined, 
     email: req.user[0].email,
-    imgPath: imageextract.imgPath
+    imgPath: dataextract.imgPath,
+    socials: {
+      facebook: dataextract.socials.facebook,
+      linkedin: dataextract.socials.linkedin,
+      instagram: dataextract.socials.instagram,
+      twitter: dataextract.socials.twitter,
+      website: dataextract.socials.website
+    },
+    socials_list: [
+      {social: 'facebook', link: dataextract.socials.facebook},
+      {social: 'linkedIn', link: dataextract.socials.linkedin},
+      {social: 'instagram', link: dataextract.socials.instagram},
+      {social: 'twitter', link: dataextract.socials.twitter},
+      {social: 'website', link: dataextract.socials.website}
+    ],
+    description: dataextract.description,
+    wins: 0,
+    debates: dataextract.debates
   })
 });
 
@@ -98,7 +115,24 @@ app.use('/', signRouters)
 const roomRouter = require('./routes/rooms.js');
 app.use('/room', roomRouter)
 
-// UPLOAT profile photo 
+// EDIT profile
+app.post('/fillprofile', preventnonloggeduser, async (req, res) => {
+  const userprf = await Userdb.findOne({_id : req.user[0]._id})
+
+  (req.body.facebook != '') ? userprf.socials.facebook = "" : userprf.socials.facebook = req.body.facebook 
+  (req.body.linkedin != '') ? userprf.socials.linkedin = "" : userprf.socials.linkedin = req.body.linkedin 
+  (req.body.instagram != '') ? userprf.socials.instagram = "" : userprf.socials.instagram = req.body.instagram 
+  (req.body.twitter != '') ? userprf.socials.twitter = "" : userprf.socials.twitter = req.body.twitter 
+  (req.body.web != '') ? userprf.socials.website = "" : userprf.socials.website = req.body.web 
+  (req.body.desc != '') ? userprf.description = "" : userprf.description = req.body.desc  
+  (req.body.email != '') ? userprf.email = "" : userprf.email = req.body.email  
+  
+  await userprf.save()
+
+  res.redirect('/')
+})
+
+// UPLOAD profile photo 
 app.post('/upload', preventnonloggeduser, async (req, res) => {    
 
   const updatedoc = await Userdb.findOne({_id : req.user[0]._id})
@@ -109,36 +143,29 @@ app.post('/upload', preventnonloggeduser, async (req, res) => {
       deleteprevimg(updatedoc.imgPath)
     }
 
-    updatedoc.imgPath = req.file.filename
+    updatedoc.imgPath = await resize(150, 150, req.file.filename)
     await updatedoc.save()
 
     return (err) ? res.send(err) : res.redirect('/')
   })
   
       // resizing and upgrade of photo
-     async function resize() {
+     async function resize(x, y, path) {
       // generate random photo id for user
        const imgID = `${uuidV4()}.jpg`;
 
        // Reading Image
-       console.log(__dirname)
-       const image = await Jimp.read(`${__dirname}/public/images/${updatedoc.imgPath}`);
+     const image = await Jimp.read(`${__dirname}/public/images/${path}`);
 
        // Used RESIZE_BEZIER as cb for finer images
-       image.resize(200, 300, Jimp.RESIZE_BEZIER, function(err){
-        console.log('resize')
+       image.resize(x, y, Jimp.RESIZE_BEZIER, function(err){
             if (err) throw err;
          })
          .write(`${__dirname}/public/images/${imgID}`);
 
-         console.log(`delete: ${updatedoc.imgPath}, `)
-        deleteprevimg(updatedoc.imgPath)
-        updatedoc.imgPath = imgID
-        await updatedoc.save()
-
-      }
-      resize()
-    
+        deleteprevimg(path)
+         return imgID
+      }    
 })
     
 
@@ -180,6 +207,7 @@ function deleteprevimg(imgpath){
   const pathtoimg = `./public/images/${imgpath}`
 
   try {
+    console.log(`Deleting... ${imgpath}`)
     fs.unlinkSync(pathtoimg)
   } catch(err) {
     console.log("not found")

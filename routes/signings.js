@@ -112,8 +112,19 @@ async function insert_user_db(name, email, password, anonymous){
     password: password,
     datejoined: Date.now(),
     tempUser: anonymous,
-    imgPath: ''
+    imgPath: '',
+    socials: {
+      facebook: '',
+      linkedin: '',
+      instagram: '',
+      twitter: '',
+      website: ''
+    },
+    description: '',
+    wins: 0,
+    debates: []
   })
+
   console.log("added "+inputval+" to db")
 }
 
