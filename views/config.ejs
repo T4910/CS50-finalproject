@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/login_styles.css">
+    <title>config</title>
+</head>
+<body>
+    <div class="arrange">
+        <form action="/config" method="POST">
+            <label for="show_status">public</label>
+            <input type="radio" name="show_status" value="true">
+            <br>
+            <label for="show_status">private</label>
+            <input type="radio" name="show_status" value="false">
+            <br>
+            <input type="text" name="topic" id="topic">
+            <textarea name="description" id="description" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...."></textarea>
+            <input type="submit" value="Start room">
+        </form>
+    </div>
+</body>
+</html>

@@ -68,6 +68,7 @@ initPassport(passport, identifyuser, identifyid)
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(express.json());
 app.use(flash())
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -105,7 +106,6 @@ app.get('/', preventnonloggeduser, async (req, res) => {
     debates: dataextract.debates
   })
 });
-
 
 // Signing routers
 const signRouters = require('./routes/signings.js')
@@ -168,6 +168,11 @@ app.post('/upload', preventnonloggeduser, async (req, res) => {
       }    
 })
     
+// CONFIGURATION page
+app.post('/config',/* preventnonloggeduser,*/ (req, res) => {
+  res.redirect('/room')
+  // res.render('config.ejs')
+})
 
 // checks for socket connections in stream rooms
 io.on('connection', socket => {

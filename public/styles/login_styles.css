@@ -55,6 +55,14 @@ form[action='/upload'] label{
     cursor: pointer;
 }
 
+.fillprf{
+    background-color: blue;
+}
+
+form.editform{
+    display: none
+}
+
 img.avatar{
     border-radius: 50%;
     margin: 10px auto;
@@ -110,6 +118,10 @@ p.worddescription{
 .roominit{
     height: 20vh;
     width: auto;
+}
+
+.menu{
+    display: inline-block
 }
 
 .menu div {

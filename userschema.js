@@ -4,7 +4,11 @@ const Userschema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    datejoined: Date,
+    datejoined: {
+        type: Date,
+        immutable: true,
+        default: () => Date.now
+    },
     tempUser: Boolean,
     imgPath: String,
     socials:{

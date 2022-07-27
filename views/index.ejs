@@ -11,12 +11,12 @@
 <body>
     <div class="arrange">
         <div class="profile">
-            <div class="menu">
+            <div class="menu" id="menu">
                 <div></div>
                 <div></div>
                 <div></div>
             </div>
-            <nav>
+            <nav id="companystuff">
                 <ul>
                   <li><a href="#">version</a></li>
                   <li><a href="#">About us</a></li>
@@ -74,47 +74,29 @@
                     </ul>
                 </div>
             </div>
-
-            <form action="/fillprofile" method="POST">
-                <textarea name="desc" id="desc" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...."></textarea>
-                <br>
-                <label for="email">
-                    email:
-                    <input type="email" name="email" id="email" value=<%= email %>>
-                </label>
-                <br>
-                <% for (i = 0; i < socials_list.length; i++){ %>
-                    <label for=<%= socials_list[i].social %>>
-                    <%= socials_list[i].social %>: 
-                    <input type="text" name=<%= socials_list[i].social %> id=<%= socials_list[i].social %> value=<%= socials_list[i].link %>>
+            <div class="fillprf">
+                
+                <form action="/fillprofile" method="POST" class="editform" id="editform">
+                    <textarea name="descr" id="desc" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...."></textarea>
                     <br>
-                <% } %>
-                <!-- <label for="facebook">
-                    facebook:
-                    <input type="text" name="facebook" id="facebook" value=<%= socials.facebook %>>
-                </label>
-                <br>
-                <label for="linkedin">
-                    linkedin:
-                    <input type="text" name="linkedin" id="linkedin" value=<%= socials.linkedin %>>
-                </label>
-                <br>
-                <label for="instagram">
-                    instagram:
-                    <input type="text" name="instagram" id="instagram" value=<%= socials.instagram %>>
-                </label>
-                <br>
-                <label for="twitter">
-                    twitter:
-                    <input type="text" name="twitter" id="twitter" value=<%= socials.twitter %>>
-                </label>
-                <br>
-                <label for="web">
-                    website:
-                    <input type="text" name="web" id="web" value=<%= socials.website %>>
-                </label> -->
-                <input type="submit" value="Change">
-            </form>
+                    <label for="email">
+                        email:
+                        <input type="email" name="email" id="email" value=<%= email %>>
+                    </label>
+                    <br>
+    
+                    <% for (i = 0; i < socials_list.length; i++){ %>
+                        <label for=<%= socials_list[i].social %>>
+                        <%= socials_list[i].social %>: 
+                        <input type="text" name=<%= socials_list[i].social %> id=<%= socials_list[i].social %> value=<%= socials_list[i].link %>>
+                        </label>
+                        <br>
+                    <% } %>
+    
+                    <input type="submit" value="Change">
+                </form>
+            </div>
+            <br>
             <br>
             <button id="edit">Edit...</button>
             <p>© 2022 Tobi, Inc.</p>
@@ -131,7 +113,20 @@
                 </ul>
             </div>
             <div class="roominit">
-                <button>make room</button>
+                <!-- <a href="/config">make room</a>
+                <button onclick="configure()">make room</button> -->
+                <button id="showconfigurations">make room</button>
+                <div id="configmenu" style='display: none'>
+                    <form action="/config" method="POST">
+                        <label for="show_status">public</label>
+                        <input type="radio" name="show_status" value="public">
+                        <br>
+                        <label for="show_status">private</label>
+                        <input type="radio" name="show_status" value="private">
+                        <br>
+                        <input type="submit" value="Start room">
+                    </form>
+                </div>
                 <form action="" method="POST">
                     <input type="text" name="room_id" id="room_id">
                     <input type="button" value="search">
