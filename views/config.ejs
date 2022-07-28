@@ -11,12 +11,12 @@
     <div class="arrange">
         <form action="/config" method="POST">
             <label for="show_status">public</label>
-            <input type="radio" name="show_status" value="true">
+            <input type="radio" name="show_status" value="true" required>
             <br>
             <label for="show_status">private</label>
-            <input type="radio" name="show_status" value="false">
+            <input type="radio" name="show_status" value="false" required>
             <br>
-            <input type="text" name="topic" id="topic">
+            <input type="text" name="topic" id="topic" required>
             <textarea name="description" id="description" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...."></textarea>
             <input type="submit" value="Start room">
         </form>

@@ -16,6 +16,7 @@ const io = require('socket.io')(server)
 const fs = require('fs');
 const {v4: uuidV4} = require('uuid')
 const Jimp = require('jimp')
+const url = require('url')
 
 // file uploader
 const multer = require('multer');
@@ -49,6 +50,7 @@ const upload =  multer({
 // database
 const mongoose = require('mongoose')
 const Userdb = require('./userschema')
+const Roomdb = require('./roomschema')
 mongoose.connect("mongodb://localhost/usersdb",() => {console.log('db connected')}, err => console.log(err))
 
 async function identifyuser(person){
@@ -169,16 +171,51 @@ app.post('/upload', preventnonloggeduser, async (req, res) => {
 })
     
 // CONFIGURATION page
-app.post('/config',/* preventnonloggeduser,*/ (req, res) => {
-  res.redirect('/room')
-  // res.render('config.ejs')
+app.post('/config', preventnonloggeduser, (req, res) => {
+
+  const [status, topic, desc] = [
+    encodeURIComponent(req.body.show_status), 
+    encodeURIComponent(req.body.topic),
+    encodeURIComponent(req.body.description),
+  ]
+
+  const queries = {
+      "status": status,
+      "topic": topic,
+      "description": desc,
+      "role": 'admin'
+  }
+
+  const irl = new URLSearchParams(queries).toString()
+  console.log(irl)
+
+  res.redirect('/room?'+irl)
+
 })
+  // res.render('config.ejs')
+
+app.post('/joinroom', preventnonloggeduser, (req, res) => {
+
+  const queries = {
+    "role": encodeURIComponent('basic'),
+    "ROOMID": encodeURIComponent(req.body.room_id)
+  }
+
+  const irl = new URLSearchParams(queries).toString()
+  console.log(irl)
+
+  res.redirect('/room?'+irl)
+})
+
+
 
 // checks for socket connections in stream rooms
 io.on('connection', socket => {
   socket.on('join-room', (roomID, userID) => {
     socket.join(roomID)
     socket.broadcast.to(roomID).emit('user-connected', userID)
+    // const person = await Roomdb.findOne({_id : req.user[0]._id})
+
     console.log(userID +' connected')
 
     socket.on('disconnect', () => {

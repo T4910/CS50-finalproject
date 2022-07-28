@@ -124,12 +124,17 @@
                         <label for="show_status">private</label>
                         <input type="radio" name="show_status" value="private">
                         <br>
+                        <label for="topic">topic</label>
+                        <input type="text" name="topic" id="topic" value="d" required>
+                        <br>
+                        <textarea name="description" id="description" cols="30" rows="9" maxlength="250" placeholder=" Describe yourself...." value="ds"></textarea>
+                        <br>
                         <input type="submit" value="Start room">
                     </form>
                 </div>
-                <form action="" method="POST">
+                <form action="/joinroom" method="POST">
                     <input type="text" name="room_id" id="room_id">
-                    <input type="button" value="search">
+                    <input type="submit" value="search">
                 </form>
             </div>
         </div>

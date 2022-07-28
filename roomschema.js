@@ -1,7 +1,12 @@
 const mongoose = require('mongoose')
 
 const user = new mongoose.Schema({
-    id: mongoose.SchemaTypes.ObjectId,
+    id: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
+    },
+    name: String,
+    anonymous: Boolean,
     role: String
 })
 
@@ -16,12 +21,12 @@ const Roomschema = new mongoose.Schema({
         immutable: true,
         default: () => Date.now()
     },
+    people: [user],
     winteam: {
-        winners: [mongoose.SchemaTypes.ObjectId],
+        winners: [user],
         color: String,
         tie: Boolean
-    },
-    people: [user]
+    }
 })
 
 module.exports = mongoose.model('Room', Roomschema)

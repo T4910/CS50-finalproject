@@ -1,3 +1,5 @@
+console.log(ORGID)
+
 const socket = io('/')
 const vidspace = document.querySelector('#records')
 const userPeer = new Peer(undefined, {
