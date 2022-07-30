@@ -8,6 +8,8 @@
     <script>
         const ROOMID = "<%= roomID %>"
         const ORGID = "<%= orguserID %>"
+        const ORGNAME = "<%= orguserNAME %>"
+        const ORGINFO = "<%= roomINFO %>"
     </script>
     <script src="https://unpkg.com/peerjs@1.4.5/dist/peerjs.min.js" defer></script>
     <script src="/socket.io/socket.io.js" defer></script>
@@ -18,14 +20,36 @@
             grid-template-columns: repeat(auto-fill, 100px);
             grid-auto-rows: 100px
         }
+        #records p {
+            margin: 0px;
+        }
         video{
             width: 100%;
-            height: 100%;
+            height: 80%;
             object-fit: cover;
         }
     </style>
 </head>
 <body>
+    <h1><%= roomINFO.topic %></h1>
+    <h3><%= roomINFO.desc %></h3>
     <div id="records"></div>
+    <br>
+    <div class="participants">
+        <ol id="p_list">
+            <% for (i = 0; i < roomINFO.people.length; i++){ %>
+                <li>
+                    name: <%= roomINFO.people[i].name %>
+                    <br>
+                    email: <%= roomINFO.people[i].email %>
+                    <br>
+                    description: <%= roomINFO.people[i].description %>
+                    <br>
+                    role: <%= roomINFO.people[i].role %>
+                    <br>
+                </li>
+            <% } %>
+        </ol>
+    </div>
 </body>
 </html>

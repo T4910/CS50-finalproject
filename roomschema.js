@@ -29,4 +29,6 @@ const Roomschema = new mongoose.Schema({
     }
 })
 
+Roomschema.statics.getusersinfo
+
 module.exports = mongoose.model('Room', Roomschema)

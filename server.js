@@ -202,7 +202,7 @@ app.post('/joinroom', preventnonloggeduser, (req, res) => {
   }
 
   const irl = new URLSearchParams(queries).toString()
-  console.log(irl)
+  // console.log(irl)
 
   res.redirect('/room?'+irl)
 })
@@ -211,12 +211,18 @@ app.post('/joinroom', preventnonloggeduser, (req, res) => {
 
 // checks for socket connections in stream rooms
 io.on('connection', socket => {
-  socket.on('join-room', (roomID, userID) => {
+  socket.on('join-room', (roomID, userID, name) => {
     socket.join(roomID)
-    socket.broadcast.to(roomID).emit('user-connected', userID)
-    // const person = await Roomdb.findOne({_id : req.user[0]._id})
-
+    // socket.on('ready', () => {
+      socket.broadcast.to(roomID).emit('user-connected', userID, name)
+    // })
+    // const person = await Roomdb.findOne({_id : })
     console.log(userID +' connected')
+
+    socket.on('sendNAME', (sendname) => {
+      console.log('fROM send nae'+ sendname);
+      socket.broadcast.to(roomID).emit("Addname", sendname)
+    })
 
     socket.on('disconnect', () => {
       socket.broadcast.to(roomID).emit('user-disconnected', userID)
