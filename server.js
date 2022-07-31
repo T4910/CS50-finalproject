@@ -213,10 +213,9 @@ app.post('/joinroom', preventnonloggeduser, (req, res) => {
 io.on('connection', socket => {
   socket.on('join-room', (roomID, userID, name) => {
     socket.join(roomID)
-    // socket.on('ready', () => {
+    socket.on('ready', () => {
       socket.broadcast.to(roomID).emit('user-connected', userID, name)
-    // })
-    // const person = await Roomdb.findOne({_id : })
+    })
     console.log(userID +' connected')
 
     socket.on('sendNAME', (sendname) => {
@@ -225,7 +224,7 @@ io.on('connection', socket => {
     })
 
     socket.on('disconnect', () => {
-      socket.broadcast.to(roomID).emit('user-disconnected', userID)
+      socket.broadcast.to(roomID).emit('user-disconnected', userID, name)
       console.log(userID +' disconnected')
     })
 
