@@ -170,6 +170,7 @@ app.post('/upload', preventnonloggeduser, async (req, res) => {
       }    
 })
     
+
 // CONFIGURATION page
 app.post('/config', preventnonloggeduser, (req, res) => {
 
@@ -192,8 +193,8 @@ app.post('/config', preventnonloggeduser, (req, res) => {
   res.redirect('/room?'+irl)
 
 })
-  // res.render('config.ejs')
 
+// ADDING users to room
 app.post('/joinroom', preventnonloggeduser, (req, res) => {
 
   const queries = {
@@ -207,6 +208,30 @@ app.post('/joinroom', preventnonloggeduser, (req, res) => {
   res.redirect('/room?'+irl)
 })
 
+app.post('/changerole', preventnonloggeduser, async (req, res) => {
+  const room_db = await Roomdb.findOne({room_id: req.body.roomID})
+  let present_people = room_db.people
+  let indexx;
+
+  present_people.forEach((item, index) => {
+    if(item.id == req.body.person_id){
+      indexx = index
+    } 
+  })
+
+  console.log(req.body.new_role)
+
+  present_people[indexx].role = req.body.new_role
+
+  await room_db.save()
+
+  console.log('worked')
+  console.log(req.body.roomID)
+  console.log('wor')
+  io.to(req.body.roomID).emit('update-role', req.body.person_id, req.body.new_role)
+
+
+})
 
 
 // checks for socket connections in stream rooms
@@ -218,13 +243,13 @@ io.on('connection', socket => {
     })
     console.log(userID +' connected')
 
-    socket.on('sendNAME', (sendname) => {
+    socket.on('sendNAME', (sendname, sendID, sendrole, sendanon) => {
       console.log('fROM send nae'+ sendname);
-      socket.broadcast.to(roomID).emit("Addname", sendname)
+      socket.broadcast.to(roomID).emit("Addname", sendname, sendID, sendrole, sendanon)
     })
 
     socket.on('disconnect', () => {
-      socket.broadcast.to(roomID).emit('user-disconnected', userID, name)
+      socket.broadcast.to(roomID).emit('user-disconnected', userID)
       console.log(userID +' disconnected')
     })
 

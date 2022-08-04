@@ -26,27 +26,27 @@ router.get('/',preventnonloggeduser, async (req, res) => {
 router.get('/:roomid', preventnonloggeduser, async (req, res) => {
   // console.log(`${req.user[0]._id} From roon route`)
 
-  const room_db = await Roomdb.findOne({room_id: req.params.roomid}).populate('people.id')
+  const room_db = await Roomdb.findOne({room_id: req.params.roomid})//.populate('people.id')
 
   const room_info = {
     topic: room_db.topic,
-    desc: room_db.description,
-    people: room_db.people.map((elem) => {
-      return {
-        'id': elem.id._id, 
-        'name': elem.id.username, 
-        'email': elem.id.email, 
-        'img': elem.id.imgPath,
-        'description': elem.id.description,
-        'socials': elem.id.socials,
-        'role': elem.role
-      }
-    })
+    desc: room_db.description
   }
 
-  // console.log(room_db)
+  console.log(req.user[0]._id)
+  let data = room_db.people.find(elem => elem.id.toString() == req.user[0]._id.toString())
 
-  res.render('room', {roomID: req.params.roomid, orguserID: req.user[0]._id, orguserNAME: req.user[0].username, roomINFO: room_info})
+  const userinfo = JSON.stringify(req.user[0])
+
+  // console.log(userinfo)
+  res.render('room', {
+    roomID: req.params.roomid, 
+    orguserID: req.user[0]._id, 
+    orguserNAME: req.user[0].username, 
+    roomINFO: room_info,
+    orguserROLE: data.role,
+    orguserANON: data.anonymous
+  })
 })
   
 
