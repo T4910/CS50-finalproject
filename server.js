@@ -247,6 +247,11 @@ io.on('connection', socket => {
       console.log('fROM send nae'+ sendname);
       socket.broadcast.to(roomID).emit("Addname", sendname, sendID, sendrole, sendanon)
     })
+    
+    socket.on('sendMESSAGE', (name, message, roomid) => {
+      console.log(`From ${name}: ${message} to room of ID ${roomid}`);
+      socket.to(roomid).emit("Addmessage", name, message)
+    })
 
     socket.on('disconnect', () => {
       socket.broadcast.to(roomID).emit('user-disconnected', userID)

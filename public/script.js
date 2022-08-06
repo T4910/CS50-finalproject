@@ -31,7 +31,9 @@ const myvid = document.createElement('video')
 // mutes video for the current user
 myvid.muted = true
 
+// if (ORGROLE == 'admin'){
 
+// }
 navigator.mediaDevices.getUserMedia({video: true, audio: false})
 .then(stream => {
 
@@ -86,7 +88,6 @@ socket.on('update-role', (id, role) => {
 })
 
 
-
 // adds other people's video streams to yours
 function videostream(video, stream, name){
     video.srcObject = stream
@@ -111,6 +112,7 @@ function participants(id, name, role, anonymous){
     let selectrole = document.createElement('select')
     let view_profile = document.createElement('button')
     let change_role = document.createElement('button')
+    let show_video = document.createElement('button')
     let username = document.createElement('p')
     let userrole = document.createElement('p')
 
@@ -130,10 +132,12 @@ function participants(id, name, role, anonymous){
     view_profile.setAttribute('id', 'show_profile')
     selectrole.setAttribute('id', 'show_roles')
     change_role.setAttribute('onclick', `change_profile_func(this, '${name}')`)
+    show_video.setAttribute('onclick', `show_video_func(this, '${name}')`)
     list_div.setAttribute('id', `us${id}er`)
 
     let btntext = document.createTextNode('View profile')
     let btnrole = document.createTextNode('Change role')
+    let videobtn = document.createTextNode('Video')
     let nametext = document.createTextNode(name)
     let roletext = document.createTextNode(role)
 
@@ -141,6 +145,7 @@ function participants(id, name, role, anonymous){
 
     participants_connected[name] = id
 
+    show_video.appendChild(videobtn)
     view_profile.appendChild(btntext)
     change_role.appendChild(btnrole)
     username.appendChild(nametext)
@@ -154,6 +159,7 @@ function participants(id, name, role, anonymous){
     if (ORGROLE == 'admin'){
         list_div.appendChild(change_role)
         list_div.appendChild(selectrole)
+        list_div.appendChild(show_video)
     }
 
 

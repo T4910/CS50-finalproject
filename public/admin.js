@@ -24,24 +24,7 @@ async function change_profile_func(elem, name){
     console.log(name)
 }
 
-
-
-async function configure(){
-    const responses = await fetch('http://localhost:3000/changerole', {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            public: true,
-            roomID: ROOMID,
-            person_id: person
-        })
-    })
-
-    const data = await responses.json()
-    console.log(data)
-    console.log(participants_connected)
+async function show_video_func(elem, name){  
+    
 }
-
 
