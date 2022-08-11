@@ -188,7 +188,6 @@ app.post('/config', preventnonloggeduser, (req, res) => {
   }
 
   const irl = new URLSearchParams(queries).toString()
-  console.log(irl)
 
   res.redirect('/room?'+irl)
 
@@ -238,10 +237,15 @@ app.post('/changerole', preventnonloggeduser, async (req, res) => {
 io.on('connection', socket => {
   socket.on('join-room', (roomID, userID, name) => {
     socket.join(roomID)
-    socket.on('ready', () => {
+    // socket.on('ready', () => {
       socket.broadcast.to(roomID).emit('user-connected', userID, name)
+      console.log(userID +' connected')
+    // })
+
+    socket.on('new-stream', (id, user_num, num_list) => {
+      socket.broadcast.to(roomID).emit("NEWstream", id, user_num, num_list)
+      console.log('a new streamer')
     })
-    console.log(userID +' connected')
 
     socket.on('sendNAME', (sendname, sendID, sendrole, sendanon) => {
       console.log('fROM send nae'+ sendname);
@@ -253,8 +257,13 @@ io.on('connection', socket => {
       socket.to(roomid).emit("Addmessage", name, message)
     })
 
+    // socket.on('newconnectedlist', listed => {
+    //   socket.broadcast.to(roomID).emit('newlist', listed, allusers)
+    //   console.log(allusers)
+    // })
+
     socket.on('disconnect', () => {
-      socket.broadcast.to(roomID).emit('user-disconnected', userID)
+      socket.broadcast.to(roomID).emit('user-disconnected', userID, name)
       console.log(userID +' disconnected')
     })
 
