@@ -26,7 +26,9 @@ let participants_connected = {}
 
 userPeer.on('open', userpeerid => {
     users_number = userpeerid
-    socket.emit('join-room', ROOMID, userpeerid, ORGID)
+    socket.emit('join-room', ROOMID, userpeerid, ORGID, ORGNAME, ORGROLE, ORGANON)
+    console.log('ksdfdsf')
+    participants(users_number, ORGNAME, ORGROLE, ORGANON)
 })
 
 
@@ -37,8 +39,6 @@ socket.on('NEWstream', (id, admin_number, othercallers) => {
 })
 
 buildvidstreams()
-participants(ORGID, ORGNAME, ORGROLE, ORGANON)
-
 
 // disconnects the users and removes the video from the users vidspace
 socket.on('user-disconnected', (userID, name) => {
@@ -54,12 +54,24 @@ socket.on('Addname', (othername, otherID, otherrole, otheranon) => {
     otheruserID = otherID
     otheruserrole = otherrole
     otheruseranon = otheranon
-    participants(otheruserID, otherusername, otheruserrole, otheruseranon)
 })
 
 // update role
 socket.on('update-role', (id, role) => {
     updateusersrole(id, role)
+})
+
+socket.on('connectionlist', (list, id, profile_id) => {
+    console.log(id)
+    if (users_number == id){
+        console.log('making up participants list that was sent')
+        for (let person in list) {
+            // console.log(list[person])
+            // passing in the wrong values
+            console.log('JOEIRDFV')
+            participants(list[person].id, list[person].name, list[person].role, list[person].anonymous)
+        }
+    }
 })
 
 // update role
@@ -85,7 +97,9 @@ function videostream(video, stream, name){
 }
 
 // Adds connected users to the list
+// it deals with participants_connected
 function participants(id, name, role, anonymous){
+    console.log(`forming participant....${name}`)
     let li = document.createElement('li')
     let list_div = document.createElement('div')
 
@@ -124,7 +138,7 @@ function participants(id, name, role, anonymous){
     let nametext = document.createTextNode(name)
     let roletext = document.createTextNode(role)
 
-    participants_connected[name] = id
+    participants_connected[name] = {id: id, name: name, role: role, anonymous: anonymous}
 
     show_video.appendChild(videobtn)
     end_show_video.appendChild(endvideobtn)
@@ -152,14 +166,14 @@ function participants(id, name, role, anonymous){
 
 function updateusersrole(id, role){
     document.querySelector(`#us${id}er`).querySelector('#userroles').innerHTML = `${role}`
-    if (ORGID == id){
+    if (users_number == id){
         ORGROLE = role
         console.log(`updateusersrole ${role}`)
     }    
 }
 
-
 // connects new users to you when a user connects
+// deals with peers_connected
 function connecttouser(userID, stream, name, id, role, anonymous, otherpersonid) {
     const connecteduservideo = document.createElement('video')
 
@@ -173,29 +187,16 @@ function connecttouser(userID, stream, name, id, role, anonymous, otherpersonid)
         }
     })    
 
-    // when we get the stream event on the peer object it gets the users stream and
-    // adds it to your own stream box (vidspace)
-
-    // 11/8/2022 commented everything below because we do not need to get a stream back 
-    // from another streamer because we already have their stream on our vidspace
-
-    /*
-        .on('stream', (userVideoStream) => {
-            console.log(`Got to straeaming from another streamer`)
-                videostream(connecteduservideo, userVideoStream, otherusername)
-                // participants(otheruserID, otherusername, otheruserrole, otheruseranon)
-            console.log('call connected successfully, we are now streaming')
-        })
-    */
-
     // when the call ends, the connections dies leaving an empty video in vidspace
     // so RemoveUnusedDivs removes any video that has stopped or removes the video of 
     // the person that left and if the function fails for some reason, the second function
     // takes care of it
     .on('close', () => {
-        console.log('closed')
-        connecteduservideo.parentElement.remove()
-        RemoveUnusedDivs(participants_connected[userID])
+        console.log(`closed ${id} and ${userID}`)
+        // RemoveUnusedDivs(participants_connected[userID].id)
+        try{
+            connecteduservideo.parentElement.remove()
+        } catch(e){console.log('error removing')}
     })
 
     console.log(userID + ' connected')
@@ -204,13 +205,6 @@ function connecttouser(userID, stream, name, id, role, anonymous, otherpersonid)
 
     peersconnected[userID] = [call, otherpersonid]
     connected_list.push(userID)
-
-    let listedpeers = []
-    for (item in peersconnected){
-        console.log(item)
-        listedpeers.push(item)
-    }
-    socket.emit('newconnectedlist', listedpeers)
 }
 
 
@@ -223,7 +217,7 @@ function RemoveUnusedDivs(id, name){ // This function is used to remove unused d
         if (connection == 0 || vidname == name) {
             console.log('connection remonved')
             alldivs[i].remove() // remove
-            document.getElementById(`us${participants_connected[name]}er`).remove()
+            document.getElementById(`us${participants_connected[name].id}er`).remove()
         }
     }
 
@@ -232,7 +226,8 @@ function RemoveUnusedDivs(id, name){ // This function is used to remove unused d
 
 
 function buildvidstreams(id, another, callees){
-    if ((ORGROLE == 'admin' && another != true) || (ORGROLE == 'speaker' && current_vid == true) || ORGID == id){
+    console.log(id, users_number)
+    if ((ORGROLE == 'admin' && another != true) || (ORGROLE == 'speaker' && current_vid == true) || (users_number == id && id != undefined)){
         console.warn('streamer')
         // making video element
         const myvid = document.createElement('video')
@@ -241,16 +236,22 @@ function buildvidstreams(id, another, callees){
         navigator.mediaDevices.getUserMedia({video: true, audio: false})
         .then(stream => {
             // socket.emit('ready') // sends a ready signal to the server when users video is ready
+            console.log('code 1 v=/43]ET')
             videostream(myvid, stream, ORGNAME)
 
-            socket.on('user-connected', (userID, name) => {    
+            socket.on('user-connected', (userID, keyname, NAME, ROLE, ANON) => {    
                 // connecttouser(userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON)
                 console.log('connected to people...')
-                setTimeout(connecttouser, 1000, userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON, name)
+                setTimeout(connecttouser, 1000, userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON, keyname)
+                if (another != true){
+                    socket.emit('send_connection_list', participants_connected, userID)
+                }
+                console.log('OASOI')
+                participants(userID, NAME, ROLE, ANON)
             })
             
             if(another == true){
-                for (connected_ids of callees){
+                for (let connected_ids of callees){
                     console.log(connected_ids)
                     setTimeout(connecttouser, 1000, connected_ids, stream, ORGNAME, ORGID, ORGROLE, ORGANON, null)
                 }
@@ -269,19 +270,30 @@ function buildvidstreams(id, another, callees){
                 // gets stream and name of the caller then adds it to vidspace 
                 callobj.on('stream', receivedvidstream => {
                     console.log("callers name"+callobj.metadata.callersname)
+                    console.log('code 2 654].TR')
                     videostream(sentvideostream, receivedvidstream, callobj.metadata.callersname)
+                    // participants(callobj.metadata.callersid, callobj.metadata.callersname, callobj.metadata.callersrole, callobj.metadata.callersanon)
                 })
             
             })
         })
     } else {
+        if(another == true){
+            return
+        }
         // socket.emit('ready') // sends a ready signal to the server when users video is ready
         console.warn('streaming')
 
-        // socket.on('user-connected', (userID, name) => {    
-        //     // connecttouser(userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON)
-        //     setTimeout(connecttouser, 1000, userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON, name)
-        // })
+        socket.on('user-connected', (userID, keyname, NAME, ROLE, ANON) => {    
+            // connecttouser(userID, stream, ORGNAME, ORGID, ORGROLE, ORGANON)
+            console.log('CALLED for a non streamy ...987YUHREJBFNDVI4ER')
+            peersconnected[userID] = [{}, keyname]
+            connected_list.push(userID)
+            if (ORGROLE != 'speaker'){
+                console.log('NJKFDRE')
+                participants(userID, NAME, ROLE, ANON)
+            }
+        })
 
         userPeer.on('call', callobj => {
             callobj.answer() //STREAM
@@ -296,6 +308,7 @@ function buildvidstreams(id, another, callees){
             // gets stream and name of the caller then adds it to vidspace 
             callobj.on('stream', receivedvidstream => {
                 console.log("callers name"+callobj.metadata.callersname)
+                console.log('code 3 ]DS/F')
                 videostream(sentvideostream, receivedvidstream, callobj.metadata.callersname)
             })
         

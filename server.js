@@ -213,21 +213,22 @@ app.post('/changerole', preventnonloggeduser, async (req, res) => {
   let indexx;
 
   present_people.forEach((item, index) => {
+    console.log(req.body.person_id)
     if(item.id == req.body.person_id){
       indexx = index
     } 
   })
 
   console.log(req.body.new_role)
-
+  console.log(present_people)
   present_people[indexx].role = req.body.new_role
 
   await room_db.save()
 
   console.log('worked')
-  console.log(req.body.roomID)
+  console.log(req.body.call_id)
   console.log('wor')
-  io.to(req.body.roomID).emit('update-role', req.body.person_id, req.body.new_role)
+  io.to(req.body.roomID).emit('update-role', req.body.call_id, req.body.new_role)
 
 
 })
@@ -235,10 +236,10 @@ app.post('/changerole', preventnonloggeduser, async (req, res) => {
 
 // checks for socket connections in stream rooms
 io.on('connection', socket => {
-  socket.on('join-room', (roomID, userID, name) => {
+  socket.on('join-room', (roomID, userID, ORGINAL_ID, NAME, ROLE, ANON) => {
     socket.join(roomID)
     // socket.on('ready', () => {
-      socket.broadcast.to(roomID).emit('user-connected', userID, name)
+      socket.broadcast.to(roomID).emit('user-connected', userID, ORGINAL_ID, NAME, ROLE, ANON)
       console.log(userID +' connected')
     // })
 
@@ -257,13 +258,17 @@ io.on('connection', socket => {
       socket.to(roomid).emit("Addmessage", name, message)
     })
 
+    socket.on('send_connection_list', (list, identity) => {
+      socket.broadcast.to(roomID).emit("connectionlist", list, identity, userID)
+    })
+
     // socket.on('newconnectedlist', listed => {
     //   socket.broadcast.to(roomID).emit('newlist', listed, allusers)
     //   console.log(allusers)
     // })
 
     socket.on('disconnect', () => {
-      socket.broadcast.to(roomID).emit('user-disconnected', userID, name)
+      socket.broadcast.to(roomID).emit('user-disconnected', userID)
       console.log(userID +' disconnected')
     })
 
